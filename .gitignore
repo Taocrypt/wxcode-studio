@@ -1,0 +1,12 @@
+build/
+*.apk
+*.idsig
+*.jks
+*.keystore
+*.p12
+*.pfx
+tools/unidbg-bridge/target/
+tools/plib/
+tools/models/
+local.properties
+.DS_Store
