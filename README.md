@@ -1,12 +1,21 @@
 <div align="center">
 
+<img src="docs/logo.png" width="128" alt="葵花码工坊">
+
 # 葵花码工坊 · Android
 
 在手机上**离线**生成带 Logo 的微信葵花码，也能解析葵花码图片。
 
-[![Release](https://img.shields.io/github/v/release/Taocrypt/wxcode-studio)](https://github.com/Taocrypt/wxcode-studio/releases/latest)
+[![Release](https://img.shields.io/github/v/release/Taocrypt/wxcode-studio?color=07C160)](https://github.com/Taocrypt/wxcode-studio/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/Taocrypt/wxcode-studio/total?color=07C160)](https://github.com/Taocrypt/wxcode-studio/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/Android-8.0%2B%20arm64-3DDC84)
+
+[下载](https://github.com/Taocrypt/wxcode-studio/releases/latest) · [功能](#功能) · [使用说明](#使用说明) · [常见问题](#常见问题) · [从源码构建](#从源码构建) · [更新日志](CHANGELOG.md)
+
+<img src="docs/example.png" width="260" alt="示例葵花码">
+
+<sub>示例：用本项目生成、内容为本仓库地址的葵花码，可用微信扫一扫试试</sub>
 
 </div>
 
@@ -39,6 +48,45 @@
 5. 解析：在「解析葵花码」里点「选择图片解析」。
 
 > 建议正式使用前用微信实际扫一次确认。
+
+## 和上游 Web 版的区别
+
+| | 上游 wxcode-studio | 本项目 |
+|---|---|---|
+| 运行方式 | 服务器 + unidbg 模拟 | 手机直接加载原生库 |
+| 是否联网 | 需要访问服务 | 默认完全离线 |
+| 内容类型 | http(s) 网址 | 网址、任意文字、小程序（经 C1N 转链） |
+| 解析葵花码 | 无 | 支持 |
+| 平台 | 任意浏览器 | Android 8.0+ arm64 |
+
+## 隐私
+
+- 生成、校验、解析都在本机完成，App 不收集任何数据，没有统计和广告。
+- 只有使用「小程序转链」时，会把你填写的 token、appId、页面路径和密钥发送到 C1N（`https://c1n.cn`）。token、appId、页面路径保存在 App 私有存储中，方便下次使用；密钥不保存。
+- 网络权限仅用于这一功能。
+
+## 常见问题
+
+**微信扫码只显示一串文字，没有跳转？**
+微信只会对 http(s) 网址做跳转。`#小程序://` 链接和普通文字都会被当成文本显示。要扫码打开小程序，请用「小程序转链」换成 https 短链再生成。
+
+**提示「只支持 64 位 ARM 手机」或闪退？**
+内置的微信原生库只有 arm64-v8a 版本，32 位手机和 x86 模拟器无法运行。
+
+**内容长度有限制吗？**
+最多 512 字节：网址按 UTF-8 计，中文约 170 个字。
+
+**生成的码和微信官方小程序码一样吗？**
+外观由同一套原生库生成，样式一致。但普通网址生成的葵花码并非微信后台签发的小程序码，扫码后按网址或文字处理。
+
+**升级会丢数据吗？**
+所有版本使用同一签名，直接覆盖安装即可，已填写的 token 等设置会保留。
+
+## 已知限制
+
+- 只支持 arm64-v8a。
+- 「小程序转链」依赖第三方服务 C1N，需要自己注册并获取 token；`#小程序://` 链接能否直接转换取决于 C1N 接口，失败时请改用 appId + 页面路径。
+- 原生库来自微信，后续微信版本的兼容性不作保证，正式使用前请实扫确认。
 
 ## 从源码构建
 
@@ -77,8 +125,11 @@ app/
 tools/
   unidbg-bridge/                 用 unidbg 在电脑上调用原生库的测试桥（编码 / 解码）
   render_svg.py                  把编码输出的 SVG 渲染成 PNG（PIL）
+  make_logo.py                   生成项目 Logo（PIL）
   disas.py                       反汇编辅助脚本
-docs/technical-notes.md          技术说明
+docs/
+  technical-notes.md             技术说明
+  logo.png / example.png         README 用图
 ```
 
 ## 原理简述
